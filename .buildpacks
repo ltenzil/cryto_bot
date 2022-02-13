@@ -2,4 +2,3 @@ https://github.com/gigalixir/gigalixir-buildpack-clean-cache.git
 https://github.com/HashNuke/heroku-buildpack-elixir
 https://github.com/gjaldon/phoenix-static-buildpack
 https://github.com/gigalixir/gigalixir-buildpack-distillery.git
-https://buildpack-registry.s3.amazonaws.com/buildpacks/heroku/elixir.tgz
