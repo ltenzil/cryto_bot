@@ -29,6 +29,8 @@ defmodule CryptoBotWeb.Router do
   scope "/papi", CryptoBotWeb do
     pipe_through :protected_api
     get "/webhook", ChatController, :webhook
+    post "/webhook", ChatController, :incoming_message
+    
   end
 
   # Enables LiveDashboard only for development
