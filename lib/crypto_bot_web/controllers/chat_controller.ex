@@ -15,7 +15,7 @@ defmodule CryptoBotWeb.ChatController do
   def incoming_message(conn, params) do
     IO.inspect params
     if (params["object"] == "page") do
-      Enum.each(params["entries"], fn entry ->
+      Enum.each(params["entry"], fn entry ->
         event = Map.get(entry, "messaging") |> Enum.at(0)
         IO.inspect(event)
         %{"message" => %{"text" => text}, "sender" => %{"id" => sender_psid}} = event
