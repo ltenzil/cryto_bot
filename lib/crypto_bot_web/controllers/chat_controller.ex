@@ -1,6 +1,8 @@
 defmodule CryptoBotWeb.ChatController do
   use CryptoBotWeb, :controller
 
+  alias CryptoBot.FbMessenger
+
   def webhook(conn, %{"hub.mode" => mode, "hub.verify_token" => token, "hub.challenge" => challenge}) do
     verify_token = Application.get_env(:crypto_bot, :app_token)
 
@@ -13,17 +15,11 @@ defmodule CryptoBotWeb.ChatController do
   end
 
   def incoming_message(conn, params) do
-    IO.inspect params
     if (params["object"] == "page") do
       Enum.each(params["entry"], fn entry ->
         event = Map.get(entry, "messaging") |> Enum.at(0)
-        IO.inspect(event)
         %{"message" => %{"text" => text}, "sender" => %{"id" => sender_psid}} = event
-        case text do
-          "pushinhas" ->
-            send_message(sender_psid, "You are now subscribed to my updates! :)")
-          _other -> send_message(sender_psid, "new phone who dis?")
-        end
+        send_message(psid, FbMessenger.reply_for(text))
       end)
       send_resp(conn, 200, "EVENT_RECEIVED")
     else

@@ -17,11 +17,11 @@ defmodule CryptoBot.CoinGeckoApi do
     fetch_data('coins/list')
   end
 
-  @spec search(coin) :: success_map | error_map
-  def search(coin) do
+  @spec info(coin) :: success_map | error_map
+  def info(coin) do
     path    = "coins/#{coin}"
     options = [params: [localization: false, tickers: false, 
-                        market_data: false, community_data: false,
+                        community_data: false,
                         developer_data: false, sparkline: false]]
     fetch_data(path, options)
   end
@@ -36,8 +36,8 @@ defmodule CryptoBot.CoinGeckoApi do
   end
 
   
-  @spec fetch_price(coin, currency, interval) :: success_map | error_map
-  def fetch_price(coin, currency \\ "usd", interval \\ 14) do
+  @spec market_data(coin, currency, interval) :: success_map | error_map
+  def market_data(coin, currency \\ "usd", interval \\ 14) do
     path    = "coins/#{coin}/market_chart"
     options = [params: [vs_currency: currency, days: interval]]
     fetch_data(path, options)

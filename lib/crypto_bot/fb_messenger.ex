@@ -1,0 +1,74 @@
+defmodule CryptoBot.FbMessenger do
+
+  alias CryptoBot.CoinGeckoApi
+  
+  def received_msg(input) do
+
+  end
+
+  def send_msg(message) do
+
+  end
+
+  def reply_for(term) do
+    term
+    |> analyse_input
+    |> fetch_data
+    |> format_data
+  end
+
+  def analyse_input(query); do: String.split(query, ":")
+    
+  def fetch_data([type | term])
+    case Enum.member?(["price", "market", "top five"], type) do
+      true -> 
+        case call_apis(type, term) do
+          {:ok, data} -> format_data(type, data)
+          _ -> help_text
+        end
+      _ -> 
+        help_text
+    end
+  end
+
+
+  def call_apis(type, term) do
+    case type do
+      "price" -> CoinGeckoApi.info(term)
+      "market" -> CoinGeckoApi.market_data(term)
+      "top five" -> CoinGeckoApi.top_five
+      _ -> {:error, msg: "Try price:iotex or top five or market:iotex" }
+    end
+  end
+
+  def format_data("price", data) do
+    coin_name = data["name"]
+    market_cap_rank = data["market_cap_rank"]
+    market_data = data["market_data"]
+    price = market_data["current_price"]["usd"]
+    max_supply = market_data["max_supply"]
+    total_supply = market_data["total_supply"]
+    price_change_24h = market_data["price_change_24h"]
+    circulating_supply = market_data["circulating_supply"]
+    price_change_percentage_24h = market_data["price_change_percentage_24h"]
+    price_change_percentage_7d = market_data["price_change_percentage_7d"]
+    price_change_percentage_14d = market_data["price_change_percentage_14d"]
+
+    "#{coin_name}, its current price is at #{price}, has market cap rank of #{market_cap_rank}, 
+      total supply is at #{total_supply} and max supply at #{max_supply}, 
+      price_change_24h: #{price_change_24h} $,
+      price_change_percentage_24h: #{price_change_percentage_24h} %,
+      price_change_percentage_7d: #{price_change_percentage_7d} %,
+      price_change_percentage_14d: #{price_change_percentage_14d} %
+    "
+  end
+
+  def help_text do
+    "Our features are restricted to few keywords, 'top five', price:coin_name, market:coin_name
+     example: 
+     top five
+     price:iotex
+     market:shiba"
+  end
+
+end
