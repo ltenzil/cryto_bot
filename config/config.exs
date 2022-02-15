@@ -52,7 +52,7 @@ config :crypto_bot,
   app_token: System.get_env("CRYPTO_TOKEN") || "015dbcba-0a32-487e-8395-d962c311c89b",
   fb_token: System.get_env("FB_MESSENGER_TOKEN") || "015dbcba-0a32-487e-8395-d962c311c89b",
   page_id: System.get_env("PAGE_ID") || "015dbcba-0a32-487e-8395-d962c311c89b",
-  access_tokenn: System.get_env("ACCESS_TOKEN") || "015dbcba-0a32-487e-8395-d962c311c89b"
+  access_token: System.get_env("ACCESS_TOKEN") || "015dbcba-0a32-487e-8395-d962c311c89b"
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
