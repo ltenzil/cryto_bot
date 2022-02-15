@@ -34,7 +34,7 @@ defmodule CryptoBot.FbMessenger do
 
 
   def call_apis(type, term) do
-    case type do
+    case String.downcase(type) do
       "price" -> CoinGeckoApi.info(term)
       "market" -> CoinGeckoApi.market_data(term)
       "top five" -> CoinGeckoApi.top_five
@@ -42,6 +42,20 @@ defmodule CryptoBot.FbMessenger do
     end
   end
 
+  def format_data("market", data) do
+    "Market data as follows:"
+  end
+
+  def format_data("top five", data) do
+
+    "Top five as follows:"
+  end
+
+  def format_data(_type, _data) do
+    help_text
+  end
+
+  
   def format_data("price", data) do
     coin_name = data["name"]
     market_cap_rank = data["market_cap_rank"]
@@ -67,7 +81,7 @@ defmodule CryptoBot.FbMessenger do
   def help_text do
     "Our features are restricted to few keywords, 'top five', price:coin_name, market:coin_name
      example: 
-     top five
+     TopFive
      price:iotex
      market:shiba"
   end
