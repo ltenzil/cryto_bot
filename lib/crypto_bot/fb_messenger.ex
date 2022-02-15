@@ -47,15 +47,9 @@ defmodule CryptoBot.FbMessenger do
   end
 
   def format_data("top five", data) do
-
     "Top five as follows:"
   end
-
-  def format_data(_type, _data) do
-    help_text
-  end
-
-  
+ 
   def format_data("price", data) do
     coin_name = data["name"]
     market_cap_rank = data["market_cap_rank"]
@@ -78,6 +72,10 @@ defmodule CryptoBot.FbMessenger do
     "
   end
 
+  def format_data(_type, _data) do
+    help_text
+  end
+
   def help_text do
     "Our features are restricted to few keywords, 'top five', price:coin_name, market:coin_name
      example: 
@@ -85,5 +83,7 @@ defmodule CryptoBot.FbMessenger do
      price:iotex
      market:shiba"
   end
+
+
 
 end
