@@ -32,7 +32,7 @@ defmodule CryptoBotWeb.ChatController do
   end
 
   def send_message(psid, message) do
-    url = "https://graph.facebook.com/v2.6/me/messages?access_token=#{Application.get_env(:crypto_bot, :access_token)}"
+    url = "https://graph.facebook.com/v13.0/me/messages?access_token=#{Application.get_env(:crypto_bot, :access_token)}"
     body = %{recipient: %{id: psid}, message: %{text: message}}
     headers = [{"Content-type", "application/json"}]
     HTTPoison.post(url, Jason.encode!(body), headers)
