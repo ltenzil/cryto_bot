@@ -14,12 +14,13 @@ defmodule CryptoBot.FbMessenger do
     term
     |> analyse_input
     |> fetch_data
-    |> format_data
   end
 
-  def analyse_input(query); do: String.split(query, ":")
+  def analyse_input(query) do 
+    String.split(query, ":")
+  end
     
-  def fetch_data([type | term])
+  def fetch_data([type | term]) do
     case Enum.member?(["price", "market", "top five"], type) do
       true -> 
         case call_apis(type, term) do
