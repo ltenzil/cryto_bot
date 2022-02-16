@@ -2,6 +2,7 @@ defmodule CryptoBotWeb.ChatController do
   use CryptoBotWeb, :controller
 
   alias CryptoBot.FbMessenger
+  alias CryptoBot.FbApi
 
   def webhook(conn, %{"hub.mode" => mode, "hub.verify_token" => token, "hub.challenge" => challenge}) do
     verify_token = Application.get_env(:crypto_bot, :app_token)
@@ -27,11 +28,8 @@ defmodule CryptoBotWeb.ChatController do
     end
   end
 
-  def send_message(psid, message) do
-    url = "https://graph.facebook.com/v13.0/me/messages?access_token=#{Application.get_env(:crypto_bot, :access_token)}"
-    body = %{recipient: %{id: psid}, message: %{text: message}}
-    headers = [{"Content-type", "application/json"}]
-    HTTPoison.post(url, Jason.encode!(body), headers)
+  defp send_message(psid, message) do
+    FbApi.send_msg(psid, message)
   end
 
 end

@@ -47,7 +47,9 @@ defmodule CryptoBot.FbMessenger do
   end
 
   def format_data("top five", data) do
-    "Top five as follows:"
+    response = "Top five coins as follows: \n"
+    coins = Enum.map(data, fn coin -> coin["name"] end) |> Enum.join(" \n")
+    response <> coins
   end
  
   def format_data("price", data) do
@@ -82,6 +84,12 @@ defmodule CryptoBot.FbMessenger do
      TopFive
      price:iotex
      market:shiba"
+  end
+
+  def fetch_user_info(psid) do
+    access_token = Application.get_env(:crypto_bot, :access_token)
+    "https://graph.facebook.com/#{psid}?fields=first_name,last_name&access_token=#{access_token}"
+
   end
 
 
