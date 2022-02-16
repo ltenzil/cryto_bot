@@ -47,23 +47,35 @@ defmodule CryptoBot.FbMessenger do
   end
 
   def format_data("top", data) do
-    coins = Enum.map(data, fn coin ->
+    coin_batches = Enum.map(data, fn coin ->
       %{
         type: "postback",
         title: coin["name"],
         payload: String.downcase(coin["name"])
       }
+    end) |> Enum.chunk_every(2)
+    elements = Enum.map(coin_batches, fn coins ->
+      %{ title: "Coin batches:", buttons: coins }
     end)
+
     %{
       type: "template",
       payload: %{
         template_type: "generic",
-        elements: [
-           %{ title: "Top five coins as follows:", buttons: coins }
-        ]
+        elements: elements
       }
     }
     |> attachment_msg
+  end
+
+  def attachment_format(elements) do
+    %{
+      type: "template",
+      payload: %{
+        template_type: "generic",
+        elements: elements
+      }
+    }
   end
  
   def format_data("price", data) do
@@ -109,6 +121,12 @@ defmodule CryptoBot.FbMessenger do
 
   def text_msg(msg), do: Jason.encode!(%{text: msg})
   def attachment_msg(msg), do: Jason.encode!(%{attachment: msg})
+  def quick_replies(msg, title) do
+    %{
+      text: title,
+      quick_replies: msg
+    } |> Jason.encode!
+  end
 
 
 
