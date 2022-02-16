@@ -20,7 +20,7 @@ defmodule CryptoBot.FbMessenger do
     String.split(query, ":")
   end
     
-  def fetch_data([type | term]) do
+  def fetch_data([type, term]) do
     case Enum.member?(["price", "market", "top"], type) do
       true -> 
         case call_apis(type, term) do
@@ -31,6 +31,8 @@ defmodule CryptoBot.FbMessenger do
         help_text
     end
   end
+
+  def fetch_data(term), do: help_text
 
 
   def call_apis(type, term) do
@@ -52,11 +54,11 @@ defmodule CryptoBot.FbMessenger do
         type: "postback", # for buttons
         # content_type: "text", for quick replies
         title: coin["name"],
-        payload: "price:#{String.downcase(coin["symbol"])}"
+        payload: "price:#{String.downcase(coin["id"])}"
       }
     end) 
     # quick_replies(coin_batches, "Top coins:")
-    elements = Enum.chunk_every(coin_batches, 3, fn coins ->
+    elements = Enum.map_every(coin_batches, 3, fn coins ->
       %{ title: "Top Coins:", buttons: coins }
     end)
     elements
@@ -83,18 +85,16 @@ defmodule CryptoBot.FbMessenger do
     total_supply = market_data["total_supply"]
     price_change_24h = market_data["price_change_24h"]
     circulating_supply = market_data["circulating_supply"]
-    price_change_percentage_24h = market_data["price_change_percentage_24h"]
-    price_change_percentage_7d = market_data["price_change_percentage_7d"]
-    price_change_percentage_14d = market_data["price_change_percentage_14d"]
+    change_percentage_24h = market_data["price_change_percentage_24h"]
+    change_percentage_7d = market_data["price_change_percentage_7d"]
+    change_percentage_14d = market_data["price_change_percentage_14d"]
      
-    "#{coin_name}, current price: #{price} $
-      market cap rank: #{market_cap_rank}
-      total supply: #{total_supply}
-      max supply: #{max_supply}
-      24h $ change: #{price_change_24h} $
-      24h % change: #{price_change_percentage_24h} % 
-      7d % change: #{price_change_percentage_7d} %
-      14d % change: #{price_change_percentage_14d} %"
+    "#{coin_name}, \n current price: #{price} $
+      market cap rank: #{market_cap_rank} \n total supply: #{total_supply}
+      max supply: #{max_supply} \n 24h $ change: #{price_change_24h} $
+      24h % change: #{change_percentage_24h} % 
+      7d % change: #{change_percentage_7d} %
+      14d % change: #{change_percentage_14d} %"
     |> text_msg
   end
 
@@ -105,7 +105,7 @@ defmodule CryptoBot.FbMessenger do
   def help_text do
     "Our features are restricted to few keywords, 'top five', price:coin_name, market:coin_name
      example: 
-     top:five
+     top:10
      price:iotex
      market:shiba"
     |> text_msg
