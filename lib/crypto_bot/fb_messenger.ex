@@ -34,9 +34,11 @@ defmodule CryptoBot.FbMessenger do
 
 
   def call_apis(type, term) do
+    IO.inspect term
+    query = String.downcase(term)
     case String.downcase(type) do
-      "price" -> CoinGeckoApi.info(term)
-      "market" -> CoinGeckoApi.market_data(term)
+      "price" -> CoinGeckoApi.info(query)
+      "market" -> CoinGeckoApi.market_data(query)
       "top five" -> CoinGeckoApi.top_five
       _ -> {:error, msg: "Try price:iotex or top five or market:iotex" }
     end
@@ -48,8 +50,25 @@ defmodule CryptoBot.FbMessenger do
 
   def format_data("top five", data) do
     response = "Top five coins as follows: \n"
-    coins = Enum.map(data, fn coin -> coin["name"] end) |> Enum.join(" \n")
-    response <> coins
+    coins = Enum.map(data, fn coin ->
+      %{
+        type: "postback",
+        title: coin["name"],
+        payload: String.downcase(coin["name"])
+      }
+    end)
+    %{ 
+      attachment: %{
+        type: "template",
+        payload: %{
+          template_type: "generic",
+          elements: [
+             %{ title: "Top five coins as follows:", buttons: coins }
+          ]
+        }
+      }
+    }
+    |> Jason.encode!
   end
  
   def format_data("price", data) do
