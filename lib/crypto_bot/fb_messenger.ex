@@ -37,8 +37,8 @@ defmodule CryptoBot.FbMessenger do
     case String.downcase(type) do
       "price" -> CoinGeckoApi.info(term)
       "market" -> CoinGeckoApi.market_data(term)
-      "top" -> CoinGeckoApi.top_five
-      _ -> {:error, msg: "Try price:iotex or top five or market:iotex" }
+      "top" -> CoinGeckoApi.toppers(term)
+      _ -> "Try price:iotex or top:5 or market:iotex" |> text_msg
     end
   end
 
@@ -49,25 +49,19 @@ defmodule CryptoBot.FbMessenger do
   def format_data("top", data) do
     coin_batches = Enum.map(data, fn coin ->
       %{
-        # type: "postback", # for buttons
-        content_type: "text",
+        type: "postback", # for buttons
+        # content_type: "text", for quick replies
         title: coin["name"],
         payload: "price:#{String.downcase(coin["symbol"])}"
       }
     end) 
-    quick_replies(coin_batches, "Top five coins:")
-    # elements = Enum.map(coin_batches, fn coins ->
-    #   %{ title: "Coin batches:", buttons: coins }
-    # end)
-
-    # %{
-    #   type: "template",
-    #   payload: %{
-    #     template_type: "generic",
-    #     elements: elements
-    #   }
-    # }
-    # |> attachment_msg
+    # quick_replies(coin_batches, "Top coins:")
+    elements = Enum.chunk_every(coin_batches, 3, fn coins ->
+      %{ title: "Top Coins:", buttons: coins }
+    end)
+    elements
+    |> attachment_format
+    |> attachment_msg
   end
 
   def attachment_format(elements) do
@@ -93,12 +87,13 @@ defmodule CryptoBot.FbMessenger do
     price_change_percentage_7d = market_data["price_change_percentage_7d"]
     price_change_percentage_14d = market_data["price_change_percentage_14d"]
      
-    "#{coin_name}, current price: #{price} $, \n 
-      market cap rank: #{market_cap_rank}, \n
-      total supply: #{total_supply},\n max supply: #{max_supply}, \n
-      24h $ change: #{price_change_24h} $, \n
-      24h % change: #{price_change_percentage_24h} %, \n
-      7d % change: #{price_change_percentage_7d} %,  \n
+    "#{coin_name}, current price: #{price} $
+      market cap rank: #{market_cap_rank}
+      total supply: #{total_supply}
+      max supply: #{max_supply}
+      24h $ change: #{price_change_24h} $
+      24h % change: #{price_change_percentage_24h} % 
+      7d % change: #{price_change_percentage_7d} %
       14d % change: #{price_change_percentage_14d} %"
     |> text_msg
   end
@@ -125,12 +120,11 @@ defmodule CryptoBot.FbMessenger do
   def text_msg(msg), do: Jason.encode!(%{text: msg})
   def attachment_msg(msg), do: Jason.encode!(%{attachment: msg})
   def quick_replies(msg, title) do
-    %{ messaging_type: "RESPONSE",
-       message: %{
-        text: title,
-        quick_replies: msg
-      }
-    }
+    %{
+      text: title,
+      quick_replies: msg
+    } |> Jason.encode!
+    
   end
 
 

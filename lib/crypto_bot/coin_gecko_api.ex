@@ -8,6 +8,7 @@ defmodule CryptoBot.CoinGeckoApi do
   @type path :: String.t
   @type currency :: String.t
   @type interval :: integer
+  @type per_page :: integer
   @type options :: list()
   @type success_map :: {:ok, map()}
   @type error_map :: {:error, msg: String.t}
@@ -28,11 +29,11 @@ defmodule CryptoBot.CoinGeckoApi do
   end
 
   
-  @spec top_five(currency) :: success_map | error_map
-  def top_five(currency \\ "usd") do
+  @spec toppers(per_page) :: success_map | error_map
+  def toppers(per_page \\ 5) do
     path    = @endpoint <> "coins/markets"
-    options = [params: [vs_currency: currency, order: "market_cap_desc", 
-                        per_page: 5, page: 1]]
+    options = [params: [vs_currency: "usd", order: "market_cap_desc", 
+                        per_page: per_page, page: 1]]
     BaseApi.fetch_data(path, options)
   end
 

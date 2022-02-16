@@ -20,6 +20,7 @@ defmodule CryptoBotWeb.ChatController do
       Enum.each(params["entry"], fn entry ->
         event = Map.get(entry, "messaging") |> Enum.at(0)
         %{"message" => %{"text" => text}, "sender" => %{"id" => sender_psid}} = event
+        IO.inspect("Input from user #{text}")
         send_message(sender_psid, FbMessenger.reply_for(text))
       end)
       send_resp(conn, 200, "EVENT_RECEIVED")
