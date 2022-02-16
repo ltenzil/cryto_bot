@@ -63,7 +63,7 @@ defmodule CryptoBot.FbMessenger do
         ]
       }
     }
-    |> Jason.encode!
+    |> attachment_msg
   end
  
   def format_data("price", data) do
