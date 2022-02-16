@@ -21,7 +21,7 @@ defmodule CryptoBot.FbMessenger do
   end
     
   def fetch_data([type | term]) do
-    case Enum.member?(["price", "market", "top five"], type) do
+    case Enum.member?(["price", "market", "top"], type) do
       true -> 
         case call_apis(type, term) do
           {:ok, data} -> format_data(type, data)
@@ -37,7 +37,7 @@ defmodule CryptoBot.FbMessenger do
     case String.downcase(type) do
       "price" -> CoinGeckoApi.info(term)
       "market" -> CoinGeckoApi.market_data(term)
-      "top five" -> CoinGeckoApi.top_five
+      "top" -> CoinGeckoApi.top_five
       _ -> {:error, msg: "Try price:iotex or top five or market:iotex" }
     end
   end
@@ -46,8 +46,7 @@ defmodule CryptoBot.FbMessenger do
     "Market data as follows:"
   end
 
-  def format_data("top five", data) do
-    response = "Top five coins as follows: \n"
+  def format_data("five", data) do
     coins = Enum.map(data, fn coin ->
       %{
         type: "postback",
@@ -55,15 +54,13 @@ defmodule CryptoBot.FbMessenger do
         payload: String.downcase(coin["name"])
       }
     end)
-    %{ 
-      attachment: %{
-        type: "template",
-        payload: %{
-          template_type: "generic",
-          elements: [
-             %{ title: "Top five coins as follows:", buttons: coins }
-          ]
-        }
+    %{
+      type: "template",
+      payload: %{
+        template_type: "generic",
+        elements: [
+           %{ title: "Top five coins as follows:", buttons: coins }
+        ]
       }
     }
     |> Jason.encode!
@@ -81,14 +78,14 @@ defmodule CryptoBot.FbMessenger do
     price_change_percentage_24h = market_data["price_change_percentage_24h"]
     price_change_percentage_7d = market_data["price_change_percentage_7d"]
     price_change_percentage_14d = market_data["price_change_percentage_14d"]
-
-    "#{coin_name}, its current price is at #{price}, has market cap rank of #{market_cap_rank}, 
-      total supply is at #{total_supply} and max supply at #{max_supply}, 
-      price_change_24h: #{price_change_24h} $,
-      price_change_percentage_24h: #{price_change_percentage_24h} %,
-      price_change_percentage_7d: #{price_change_percentage_7d} %,
-      price_change_percentage_14d: #{price_change_percentage_14d} %
-    "
+     
+    "#{coin_name}, current price: #{price} $, market cap rank: #{market_cap_rank}, 
+      total supply: #{total_supply}, max supply: #{max_supply}, 
+      24h price change: #{price_change_24h} $,
+      24h percentage change: #{price_change_percentage_24h} %,
+      7d percentage change: #{price_change_percentage_7d} %,
+      14d percentage change: #{price_change_percentage_14d} %"
+    |> text_msg
   end
 
   def format_data(_type, _data) do
@@ -98,9 +95,10 @@ defmodule CryptoBot.FbMessenger do
   def help_text do
     "Our features are restricted to few keywords, 'top five', price:coin_name, market:coin_name
      example: 
-     TopFive
+     top:five
      price:iotex
      market:shiba"
+    |> text_msg
   end
 
   def fetch_user_info(psid) do
@@ -108,6 +106,9 @@ defmodule CryptoBot.FbMessenger do
     "https://graph.facebook.com/#{psid}?fields=first_name,last_name&access_token=#{access_token}"
 
   end
+
+  def text_msg(msg), do: Jason.encode!(%{text: msg})
+  def attachment_msg(msg), do: Jason.encode!(%{attachment: msg})
 
 
 

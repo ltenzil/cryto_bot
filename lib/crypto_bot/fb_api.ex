@@ -6,7 +6,7 @@ defmodule CryptoBot.FbApi do
 
   def send_msg(psid, message) do
     url = @endpoint <> "/v13.0/me/messages?access_token=#{@access_token}"
-    body = %{recipient: %{id: psid}, message: %{text: message}}
+    body = %{recipient: %{id: psid}, message: message}
     BaseApi.post_data(url, body)
   end
 
