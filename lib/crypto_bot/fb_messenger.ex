@@ -51,21 +51,22 @@ defmodule CryptoBot.FbMessenger do
       %{
         type: "postback",
         title: coin["name"],
-        payload: String.downcase(coin["name"])
+        payload: "price:#{String.downcase(coin["symbol"])}"
       }
-    end) |> Enum.chunk_every(2)
-    elements = Enum.map(coin_batches, fn coins ->
-      %{ title: "Coin batches:", buttons: coins }
-    end)
+    end) 
+    quick_replies(coin_batches, "Top five coins:")
+    # elements = Enum.map(coin_batches, fn coins ->
+    #   %{ title: "Coin batches:", buttons: coins }
+    # end)
 
-    %{
-      type: "template",
-      payload: %{
-        template_type: "generic",
-        elements: elements
-      }
-    }
-    |> attachment_msg
+    # %{
+    #   type: "template",
+    #   payload: %{
+    #     template_type: "generic",
+    #     elements: elements
+    #   }
+    # }
+    # |> attachment_msg
   end
 
   def attachment_format(elements) do
@@ -91,12 +92,13 @@ defmodule CryptoBot.FbMessenger do
     price_change_percentage_7d = market_data["price_change_percentage_7d"]
     price_change_percentage_14d = market_data["price_change_percentage_14d"]
      
-    "#{coin_name}, current price: #{price} $, market cap rank: #{market_cap_rank}, 
-      total supply: #{total_supply}, max supply: #{max_supply}, 
-      24h price change: #{price_change_24h} $,
-      24h percentage change: #{price_change_percentage_24h} %,
-      7d percentage change: #{price_change_percentage_7d} %,
-      14d percentage change: #{price_change_percentage_14d} %"
+    "#{coin_name}, current price: #{price} $, \n 
+      market cap rank: #{market_cap_rank}, \n
+      total supply: #{total_supply},\n max supply: #{max_supply}, \n
+      24h $ change: #{price_change_24h} $, \n
+      24h % change: #{price_change_percentage_24h} %, \n
+      7d % change: #{price_change_percentage_7d} %,  \n
+      14d % change: #{price_change_percentage_14d} %"
     |> text_msg
   end
 
@@ -122,10 +124,12 @@ defmodule CryptoBot.FbMessenger do
   def text_msg(msg), do: Jason.encode!(%{text: msg})
   def attachment_msg(msg), do: Jason.encode!(%{attachment: msg})
   def quick_replies(msg, title) do
-    %{
-      text: title,
-      quick_replies: msg
-    } |> Jason.encode!
+    %{ messaging_type: "RESPONSE",
+       message: %{
+        text: title,
+        quick_replies: msg
+      }
+    }
   end
 
 

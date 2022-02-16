@@ -4,6 +4,12 @@ defmodule CryptoBot.FbApi do
   @endpoint "https://graph.facebook.com"  
   @access_token Application.get_env(:crypto_bot, :access_token)
 
+  def send_msg(psid, %{messaging_type: "RESPONSE", message: message} = message) do
+    url = @endpoint <> "/v13.0/me/messages?access_token=#{@access_token}"
+    body = %{recipient: %{id: psid}, messaging_type: "RESPONSE", message: message}
+    BaseApi.post_data(url, body)
+  end
+
   def send_msg(psid, message) do
     url = @endpoint <> "/v13.0/me/messages?access_token=#{@access_token}"
     body = %{recipient: %{id: psid}, message: message}
