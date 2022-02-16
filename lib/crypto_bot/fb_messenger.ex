@@ -34,8 +34,6 @@ defmodule CryptoBot.FbMessenger do
 
 
   def call_apis(type, term) do
-    IO.inspect term
-    query = String.downcase(term)
     case String.downcase(type) do
       "price" -> CoinGeckoApi.info(query)
       "market" -> CoinGeckoApi.market_data(query)
