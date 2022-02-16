@@ -35,8 +35,8 @@ defmodule CryptoBot.FbMessenger do
 
   def call_apis(type, term) do
     case String.downcase(type) do
-      "price" -> CoinGeckoApi.info(query)
-      "market" -> CoinGeckoApi.market_data(query)
+      "price" -> CoinGeckoApi.info(term)
+      "market" -> CoinGeckoApi.market_data(term)
       "top five" -> CoinGeckoApi.top_five
       _ -> {:error, msg: "Try price:iotex or top five or market:iotex" }
     end
