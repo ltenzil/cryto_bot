@@ -49,7 +49,8 @@ defmodule CryptoBot.FbMessenger do
   def format_data("top", data) do
     coin_batches = Enum.map(data, fn coin ->
       %{
-        type: "postback",
+        # type: "postback", # for buttons
+        content_type: "text",
         title: coin["name"],
         payload: "price:#{String.downcase(coin["symbol"])}"
       }
