@@ -46,7 +46,7 @@ defmodule CryptoBot.FbMessenger do
     "Market data as follows:"
   end
 
-  def format_data("five", data) do
+  def format_data("top", data) do
     coins = Enum.map(data, fn coin ->
       %{
         type: "postback",
