@@ -51,14 +51,14 @@ defmodule CryptoBot.FbMessenger do
   def format_data("top", data) do
     coin_batches = Enum.map(data, fn coin ->
       %{
-        type: "postback", # for buttons
         # content_type: "text", for quick replies
+        type: "postback", # for buttons
         title: coin["name"],
         payload: "price:#{String.downcase(coin["id"])}"
       }
-    end) 
+    end) |> Enum.chunk_every(3)
     # quick_replies(coin_batches, "Top coins:")
-    elements = Enum.map_every(coin_batches, 3, fn coins ->
+    elements = Enum.map(coin_batches, fn coins ->
       %{ title: "Top Coins:", buttons: coins }
     end)
     elements
