@@ -2,6 +2,8 @@ defmodule CryptoBot.FbMessenger do
 
   alias CryptoBot.CoinGeckoApi
   
+  def error_msg(msg), do: format_data("error", msg)
+
   def reply_for(term) do
     term
     |> analyse_input
@@ -17,7 +19,7 @@ defmodule CryptoBot.FbMessenger do
       true -> 
         case call_apis(type, term) do
           {:ok, data} -> format_data(type, data)
-          _ -> help_text
+          {:error, msg} -> format_data("error", msg["error"])
         end
       _ -> 
         help_text
@@ -38,7 +40,7 @@ defmodule CryptoBot.FbMessenger do
   def format_data("market", data) do
     title = "Market data as follows:"
     prices = Enum.map(data["prices"], fn price ->
-      "$#{List.last(price)}"
+      "$#{round_value(List.last(price))}"
     end) |> Enum.join(", \n")
     "Last 14 days price as follows: \n #{prices}" |> text_msg
   end
@@ -53,22 +55,24 @@ defmodule CryptoBot.FbMessenger do
 
   def format_data("price", data) do
     coin_name = data["name"]
+    coin_id   = data["id"]
     market_data = data["market_data"]
     price = market_data["current_price"]["usd"]
     market_cap_rank = data["market_cap_rank"]
-    price_change_24h = market_data["price_change_24h"]    
-    percentage_change_7d = market_data["price_change_percentage_7d"]
-    percentage_change_14d = market_data["price_change_percentage_14d"]
+    price_change_24h = round_value(market_data["price_change_24h"])
+    percentage_change_7d = round_value(market_data["price_change_percentage_7d"])
+    percentage_change_14d = round_value(market_data["price_change_percentage_14d"])
      
-    "#{coin_name}, \n current price: #{price} $
-      market cap rank: #{market_cap_rank}
+    title = "#{coin_name}, id: #{coin_id} \nprice: #{price} $ \nrank: #{market_cap_rank}
       24h $ change: #{price_change_24h} $
       7d % change: #{percentage_change_7d} %
       14d % change: #{percentage_change_14d} %"
-    |> text_msg
+    market_data = buttons_menu(%{"name" => "Price history: market:#{coin_id}", "payload" => "market:#{coin_id}" })
+    attachment_format([element_format([market_data], title)])
+    |> attachment_msg
   end
 
-  def format_data(:error, msg) do
+  def format_data("error", msg) do
     msg |> text_msg
   end
 
@@ -78,11 +82,13 @@ defmodule CryptoBot.FbMessenger do
 
   def help_text do
     title = "Our features are restricted to few keywords:"
-    top_ten = %{"name" => "top:10", "payload" => "top:10" } |> buttons_menu
-    coin_price = %{"name" => "price:iotex", "payload" => "price:iotex" } |> buttons_menu
-    coin_market = %{"name" => "market:ripple", "payload" => "market:ripple" } |> buttons_menu
-    buttons = [top_ten, coin_price, coin_market]
-    attachment_format([element_format(buttons, title)])
+    menu = []
+    menu = menu ++ [%{"name" => "top:10", "payload" => "top:10" }]
+    menu = menu ++ [%{"name" => "price:iotex", "payload" => "price:iotex" }]
+    menu = menu ++ [%{"name" => "market:ripple", "payload" => "market:ripple" }]
+    Enum.map(menu, &(buttons_menu(&1)))
+    |> Enum.map(&(element_format(&1, title)))
+    |> attachment_format
     |> attachment_msg
   end
 
@@ -144,6 +150,8 @@ defmodule CryptoBot.FbMessenger do
     } |> Jason.encode!
     
   end
+
+  def round_value(value), do: value |> Decimal.from_float |> Decimal.round(10)
 
 
 

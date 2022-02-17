@@ -26,6 +26,7 @@ defmodule CryptoBotWeb.ChatController do
       end)
       send_resp(conn, 200, "EVENT_RECEIVED")
     else
+
       send_resp(conn, 200, "EVENT_RECEIVED")
     end
   end
@@ -39,7 +40,11 @@ defmodule CryptoBotWeb.ChatController do
   end
 
   defp send_message(psid, message) do
-    reply = FbMessenger.reply_for(message)
+    reply = try do 
+      FbMessenger.reply_for(message)
+    rescue
+      _ -> FbMessenger.error_msg("Unable to run your query, try price:<coin_id> exampl: price:shiba-inu")
+    end
     FbApi.send_msg(psid, reply)
   end
 
