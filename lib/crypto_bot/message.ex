@@ -2,7 +2,6 @@ defmodule CryptoBot.Message do
 
   def text_msg(msg), do: Jason.encode!(%{text: msg})
   def attachment_msg(attachment), do: Jason.encode!(attachment)
-  def help_msg(hint), do: Jason.encode!(hint)
   def quick_msg(msg, title) do
     %{
       text: title,

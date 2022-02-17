@@ -11,10 +11,10 @@ defmodule CryptoBot.FbMessenger do
 
   def error_msg(msg), do: format_data("error", msg)
 
-  def fetch_data("", _),   do: help_msg(help_text)
-  def fetch_data(_, ""),   do: help_msg(help_text)
-  def fetch_data(_, [""]), do: help_msg(help_text)
-  def fetch_data(_, []),   do: help_msg(help_text)
+  def fetch_data("", _),   do: help_text
+  def fetch_data(_, ""),   do: help_text
+  def fetch_data(_, [""]), do: help_text
+  def fetch_data(_, []),   do: help_text
   def fetch_data(type, [term]) do
     case Enum.member?(["price", "market", "top"], type) do
       true -> 
