@@ -65,10 +65,8 @@ defmodule CryptoBot.FbMessenger do
      
     title = "#{coin_name}, price: $#{price} rank: #{market_cap_rank}"
     subtitle = "24h $ change: $#{price_change_24h}, 7d % change: #{percentage_change_7d}%, 14d % change: #{percentage_change_14d}%"
-    buttons_menu(%{"name" => "Price History(14d)", "payload" => "market:#{coin_id}" })
-    |> Map.to_list
-    |> element_format(title, subtitle)
-    |> Map.to_list
+    menus = [buttons_menu(%{"name" => "Price History(14d)", "payload" => "market:#{coin_id}" })]
+    elements = element_format(menus, title, subtitle)
     |> attachment_format
     |> attachment_msg
   end
