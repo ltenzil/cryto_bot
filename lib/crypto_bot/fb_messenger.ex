@@ -80,8 +80,7 @@ defmodule CryptoBot.FbMessenger do
     coin_price = %{"name" => "price:iotex", "payload" => "price:iotex" } |> buttons_menu
     coin_market = %{"name" => "market:ripple", "payload" => "market:ripple" } |> buttons_menu
     buttons = [top_ten, coin_price, coin_market]
-    element_format(buttons, title)
-    |> attachment_format
+    attachment_format([element_format(buttons, title)])
     |> attachment_msg
   end
 
