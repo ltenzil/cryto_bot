@@ -8,16 +8,10 @@ defmodule CryptoBot.CoinGeckoApi do
   @type path :: String.t
   @type currency :: String.t
   @type days :: integer
-  @type limit :: integer
+  @type limit :: String.t
   @type options :: list()
   @type success_map :: {:ok, map()}
   @type error_map :: {:error, msg: String.t}
-
-  @spec list_coins :: success_map | error_map
-  def list_coins do
-    @endpoint <> "coins/list"
-    |> BaseApi.fetch_data
-  end
 
   @spec info(coin) :: success_map | error_map
   def info(coin) do
@@ -28,7 +22,6 @@ defmodule CryptoBot.CoinGeckoApi do
     BaseApi.fetch_data(path, options)
   end
 
-  
   @spec toppers(limit) :: success_map | error_map
   def toppers(limit \\ 5) do
     per_page = try do
