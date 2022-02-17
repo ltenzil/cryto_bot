@@ -26,7 +26,7 @@ defmodule CryptoBotWeb.ChatController do
       end)
       send_resp(conn, 200, "EVENT_RECEIVED")
     else
-      send_resp(conn, 404, "NOT_FOUND")
+      send_resp(conn, 200, "EVENT_RECEIVED")
     end
   end
 

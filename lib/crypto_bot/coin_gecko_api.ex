@@ -7,7 +7,7 @@ defmodule CryptoBot.CoinGeckoApi do
   @type coin :: String.t
   @type path :: String.t
   @type currency :: String.t
-  @type interval :: integer
+  @type days :: integer
   @type limit :: integer
   @type options :: list()
   @type success_map :: {:ok, map()}
@@ -44,10 +44,10 @@ defmodule CryptoBot.CoinGeckoApi do
   end
 
   
-  @spec market_data(coin, currency, interval) :: success_map | error_map
-  def market_data(coin, currency \\ "usd", interval \\ 14) do
+  @spec market_data(coin, currency, days) :: success_map | error_map
+  def market_data(coin, currency \\ "usd", days \\ 14) do
     path    = @endpoint <> "coins/#{coin}/market_chart"
-    options = [params: [vs_currency: currency, days: interval]]
+    options = [params: [vs_currency: currency, days: days, interval: "daily"]]
     BaseApi.fetch_data(path, options)
   end
 

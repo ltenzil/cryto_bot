@@ -36,11 +36,15 @@ defmodule CryptoBot.FbMessenger do
   end
 
   def format_data("market", data) do
-    "Market data as follows:"
+    title = "Market data as follows:"
+    prices = Enum.map(data["prices"], fn price ->
+      "$#{List.last(price)}"
+    end) |> Enum.join(", \n")
+    "Last 14 days price as follows: \n #{prices}" |> text_msg
   end
 
   def format_data("top", data) do
-    Enum.map(data, &(buttons(&1))) 
+    Enum.map(data, &(buttons(&1)))
     |> Enum.chunk_every(3)
     |> Enum.map(&(element_format(&1)))
     |> attachment_format
@@ -49,20 +53,18 @@ defmodule CryptoBot.FbMessenger do
 
   def format_data("price", data) do
     coin_name = data["name"]
-    market_cap_rank = data["market_cap_rank"]
     market_data = data["market_data"]
     price = market_data["current_price"]["usd"]
+    market_cap_rank = data["market_cap_rank"]
     price_change_24h = market_data["price_change_24h"]    
-    change_percentage_24h = market_data["price_change_percentage_24h"]
-    change_percentage_7d = market_data["price_change_percentage_7d"]
-    change_percentage_14d = market_data["price_change_percentage_14d"]
+    percentage_change_7d = market_data["price_change_percentage_7d"]
+    percentage_change_14d = market_data["price_change_percentage_14d"]
      
     "#{coin_name}, \n current price: #{price} $
       market cap rank: #{market_cap_rank}
       24h $ change: #{price_change_24h} $
-      24h % change: #{change_percentage_24h} % 
-      7d % change: #{change_percentage_7d} %
-      14d % change: #{change_percentage_14d} %"
+      7d % change: #{percentage_change_7d} %
+      14d % change: #{percentage_change_14d} %"
     |> text_msg
   end
 
@@ -90,6 +92,7 @@ defmodule CryptoBot.FbMessenger do
 
   end
 
+  @spec attachment_format(list()) :: map()
   defp attachment_format(elements) do
     %{
       type: "template",
@@ -100,6 +103,7 @@ defmodule CryptoBot.FbMessenger do
     }
   end
 
+  @spec buttons(map()) :: map()
   defp buttons(coin) do
     %{      
       type: "postback",
@@ -108,6 +112,7 @@ defmodule CryptoBot.FbMessenger do
     }
   end
 
+  @spec buttons_menu(map()) :: map()
   defp buttons_menu(coin) do
     %{      
       type: "postback",
@@ -116,7 +121,9 @@ defmodule CryptoBot.FbMessenger do
     }
   end
 
-  defp element_format(buttons, title \\ "Top Coins:"), do: %{ title: title, buttons: buttons }
+  defp element_format(buttons, title \\ "Top Coins:") do
+    %{ title: title, buttons: buttons }
+  end
 
   defp quick_buttons(coin) do
     # quick_replies(coin_batches, "Top coins:")

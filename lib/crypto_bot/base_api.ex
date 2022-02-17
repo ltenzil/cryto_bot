@@ -11,8 +11,7 @@ defmodule CryptoBot.BaseApi do
 
   @spec fetch_data(path, options) :: success_map | error_map
   def fetch_data(path, options \\ []) do
-    path
-    |> HTTPoison.get(@headers, options)
+    HTTPoison.get(path, @headers, options)
     |> handle_reponse
   end
 
