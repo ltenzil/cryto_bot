@@ -59,13 +59,13 @@ defmodule CryptoBot.FbMessenger do
     market_data = data["market_data"]
     price = market_data["current_price"]["usd"]
     market_cap_rank = data["market_cap_rank"]
-    price_change_24h = round_value(market_data["price_change_24h"])
-    percentage_change_7d = round_value(market_data["price_change_percentage_7d"])
-    percentage_change_14d = round_value(market_data["price_change_percentage_14d"])
+    price_change_24h = round_value(market_data["price_change_24h"], 5)
+    percentage_change_7d = round_value(market_data["price_change_percentage_7d"], 5)
+    percentage_change_14d = round_value(market_data["price_change_percentage_14d"], 5)
      
-    title = "#{coin_name}, id: #{coin_id} price: $#{price} rank: #{market_cap_rank}"
+    title = "#{coin_name}, price: $#{price} rank: #{market_cap_rank}"
     subtitle = "24h $ change: $#{price_change_24h}, 7d % change: #{percentage_change_7d}%, 14d % change: #{percentage_change_14d}%"
-    market_data = buttons_menu(%{"name" => "Price History: market:#{coin_id}", "payload" => "market:#{coin_id}" })
+    market_data = buttons_menu(%{"name" => "Price History(14d)", "payload" => "market:#{coin_id}" })
     attachment_format([element_format([market_data], title, subtitle)])
     |> attachment_msg
   end
@@ -85,7 +85,7 @@ defmodule CryptoBot.FbMessenger do
     menu = menu ++ [%{"name" => "price:iotex", "payload" => "price:iotex" }]
     menu = menu ++ [%{"name" => "market:ripple", "payload" => "market:ripple" }]
     Enum.map(menu, &(buttons_menu(&1)))
-    |> Enum.map(&(element_format(&1, title)))
+    |> element_format(title)
     |> attachment_format
     |> attachment_msg
   end
@@ -153,7 +153,7 @@ defmodule CryptoBot.FbMessenger do
     
   end
 
-  def round_value(value), do: value |> Decimal.from_float |> Decimal.round(10)
+  def round_value(value, precision \\ 10), do: value |> Decimal.from_float |> Decimal.round(precision)
 
 
 
