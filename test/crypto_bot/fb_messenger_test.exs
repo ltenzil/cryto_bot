@@ -31,12 +31,12 @@ defmodule CryptoBot.FbMessengerTest do
     end
 
     test "reply_for/1 price: should return help page" do
-      response = FbMessenger.reply_for("price:") |> Jason.decode!
+      response = FbMessenger.reply_for("price:")
       assert response == CryptoBot.Message.help_text
     end
 
     test "reply_for/1 invalid input should return help page" do
-      response = FbMessenger.reply_for(":6") |> Jason.decode!
+      response = FbMessenger.reply_for(":6")
       assert response == CryptoBot.Message.help_text
     end
 
