@@ -65,8 +65,11 @@ defmodule CryptoBot.FbMessenger do
      
     title = "#{coin_name}, price: $#{price} rank: #{market_cap_rank}"
     subtitle = "24h $ change: $#{price_change_24h}, 7d % change: #{percentage_change_7d}%, 14d % change: #{percentage_change_14d}%"
-    market_data = buttons_menu(%{"name" => "Price History(14d)", "payload" => "market:#{coin_id}" })
-    attachment_format([element_format([market_data], title, subtitle)])
+    buttons_menu(%{"name" => "Price History(14d)", "payload" => "market:#{coin_id}" })
+    |> Map.to_list
+    |> element_format(title, subtitle)
+    |> Map.to_list
+    |> attachment_format
     |> attachment_msg
   end
 
@@ -84,8 +87,8 @@ defmodule CryptoBot.FbMessenger do
     menu = menu ++ [%{"name" => "top:10", "payload" => "top:10" }]
     menu = menu ++ [%{"name" => "price:iotex", "payload" => "price:iotex" }]
     menu = menu ++ [%{"name" => "market:ripple", "payload" => "market:ripple" }]
-    Enum.map(menu, &(buttons_menu(&1)))
-    |> element_format(title)
+    menus = Enum.map(menu, &(buttons_menu(&1))) 
+    elements = [element_format(menus, title)]
     |> attachment_format
     |> attachment_msg
   end
@@ -117,7 +120,7 @@ defmodule CryptoBot.FbMessenger do
   end
 
   @spec buttons_menu(map()) :: map()
-  defp buttons_menu(coin) do
+  def buttons_menu(coin) do
     %{      
       type: "postback",
       title: coin["name"],
@@ -125,10 +128,12 @@ defmodule CryptoBot.FbMessenger do
     }
   end
 
+  @spec element_format(list(), String.t) :: map()
   defp element_format(buttons, title \\ "Top Coins:") do
     %{ title: title, buttons: buttons }
   end
   
+  @spec element_format(list(), String.t, String.t) :: map()
   defp element_format(buttons, title, subtitle) do
     %{ title: title, subtitle: subtitle, buttons: buttons }
   end

@@ -33,6 +33,7 @@ defmodule CryptoBot.BaseApi do
         {:error, msg: reason}
       {:ok, %HTTPoison.Response{status_code: 400, body: body}} ->
         response = Jason.decode!(body)
+        IO.inspect(response)
         {:ok, msg: response["error"]["message"] }
     end
   end
