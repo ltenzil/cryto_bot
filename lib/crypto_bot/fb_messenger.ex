@@ -20,7 +20,7 @@ defmodule CryptoBot.FbMessenger do
       true -> 
         case call_apis(type, term) do
           {:ok, data} -> format_data(type, data)
-          {:error, error} -> format_data("error", error[:msg])
+          {:error, error} -> format_data("error", "#{error[:msg]}")
         end
       _ -> 
         help_text
@@ -33,7 +33,7 @@ defmodule CryptoBot.FbMessenger do
       "price" ->  CoinGeckoApi.info(term)
       "market" -> CoinGeckoApi.market_data(term)
       "top" ->    CoinGeckoApi.toppers(term)
-      _ ->        {:error, [msg: 'Try price:iotex or top:5 or market:iotex']}
+      _ ->        {:error, [msg: "Try price:iotex or top:5 or market:iotex"]}
     end
   end
 
