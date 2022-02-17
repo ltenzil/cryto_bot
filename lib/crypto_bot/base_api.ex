@@ -30,7 +30,10 @@ defmodule CryptoBot.BaseApi do
       {:ok, %HTTPoison.Response{status_code: 404}} ->
         {:error, msg: 'Coin not found, Please check the value'}
       {:error, %HTTPoison.Error{reason: reason}} ->
-        {:error, msg: reason}      
+        {:error, msg: reason}
+      {:ok, %HTTPoison.Response{status_code: 400, body: body}} ->
+        response = Jason.decode!(body)
+        {:ok, msg: response["error"]["message"] }
     end
   end
 

@@ -43,7 +43,7 @@ defmodule CryptoBotWeb.ChatController do
     reply = try do 
       FbMessenger.reply_for(message)
     rescue
-      _ -> FbMessenger.error_msg("Unable to run your query, try price:<coin_id> exampl: price:shiba-inu")
+      _ -> FbMessenger.error_msg("Unable to run your query, try price:<coin_id> \n example: price:shiba-inu")
     end
     FbApi.send_msg(psid, reply)
   end

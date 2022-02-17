@@ -63,12 +63,10 @@ defmodule CryptoBot.FbMessenger do
     percentage_change_7d = round_value(market_data["price_change_percentage_7d"])
     percentage_change_14d = round_value(market_data["price_change_percentage_14d"])
      
-    title = "#{coin_name}, id: #{coin_id} \nprice: #{price} $ \nrank: #{market_cap_rank}
-      24h $ change: #{price_change_24h} $
-      7d % change: #{percentage_change_7d} %
-      14d % change: #{percentage_change_14d} %"
-    market_data = buttons_menu(%{"name" => "Price history: market:#{coin_id}", "payload" => "market:#{coin_id}" })
-    attachment_format([element_format([market_data], title)])
+    title = "#{coin_name}, id: #{coin_id} price: $#{price} rank: #{market_cap_rank}"
+    subtitle = "24h $ change: $#{price_change_24h}, 7d % change: #{percentage_change_7d}%, 14d % change: #{percentage_change_14d}%"
+    market_data = buttons_menu(%{"name" => "Price History: market:#{coin_id}", "payload" => "market:#{coin_id}" })
+    attachment_format([element_format([market_data], title, subtitle)])
     |> attachment_msg
   end
 
@@ -129,6 +127,10 @@ defmodule CryptoBot.FbMessenger do
 
   defp element_format(buttons, title \\ "Top Coins:") do
     %{ title: title, buttons: buttons }
+  end
+  
+  defp element_format(buttons, title, subtitle) do
+    %{ title: title, subtitle: subtitle, buttons: buttons }
   end
 
   defp quick_buttons(coin) do
